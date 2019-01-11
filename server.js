@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const users = require("./routes/api/users");
 const profile = require("./routes/api/profile");
 const posts = require("./routes/api/posts");
+const passport = require("passport"); //3a. require passport
 
 const app = express();
 
@@ -25,6 +26,12 @@ mongoose
   .catch(err => console.log(err));
 
 app.get("/", (req, res) => res.send("Hello"));
+
+//3b. Passport middleware initialization
+app.use(passport.initialize());
+
+//3c. Passport Config strategy
+require("./config/passport")(passport); //requiring the passport strategy and passing passport as an argument.
 
 //Use Routes
 app.use("/api/users", users);

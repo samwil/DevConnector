@@ -5,6 +5,9 @@ const gravatar = require("gravatar");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
+const passport = require("passport"); //3e. bring in passport
+
+//3. Passport JWT Authentication and Strategy
 
 //@route    GET api/users/test
 //@desc     Tests users route
@@ -81,5 +84,22 @@ router.post("/login", (req, res) => {
     });
   });
 });
+
+//3f. create a route to extract information of the current user
+//@route    GET api/users/current
+//@desc     Return current user
+//@access   Private
+router.get(
+  "/current",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    //the user is now in the req.user
+    res.json({
+      id: req.user.id,
+      name: req.user.name,
+      email: req.user.email
+    });
+  }
+);
 
 module.exports = router;
