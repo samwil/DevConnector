@@ -1,3 +1,5 @@
+//3. Passport JWT Authentication and Strategy
+
 const express = require("express");
 const router = express.Router();
 const User = require("../../models/User");
@@ -7,7 +9,9 @@ const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
 const passport = require("passport"); //3e. bring in passport
 
-//3. Passport JWT Authentication and Strategy
+//4f. load input validation
+const validateRegisterInput = require("../../validation/register");
+const validateLoginInput = require("../../validation/login");
 
 //@route    GET api/users/test
 //@desc     Tests users route
@@ -18,11 +22,22 @@ router.get("/test", (req, res) => res.json({ msg: "users works" }));
 //@desc     Register user
 //@access   Public
 router.post("/register", (req, res) => {
+  //4g. pull out the errors and is valid from validation/register
+  const { errors, isValid } = validateRegisterInput(req.body); //destructuring
+
+  //4h. check validation
+  if (!isValid) {
+    //if isValid is true then the object should be empty of errors
+    return res.status(400).json(errors);
+  }
+
   User.findOne({ email: req.body.email }).then(user => {
     if (user) {
-      return res.status(400).json({ email: "Email already exists" });
+      //4h
+      errors.email = "Email already exists";
+      return res.status(400).json(errors);
     } else {
-      const avatar = new gravatar.url(req.body.email, {
+      const avatar = gravatar.url(req.body.email, {
         s: "200", //size
         r: "pg", //Rating
         d: "mm" //Default
@@ -30,8 +45,8 @@ router.post("/register", (req, res) => {
       const newUser = new User({
         name: req.body.name,
         email: req.body.email,
-        password: req.body.password,
-        avatar
+        avatar,
+        password: req.body.password
       });
       bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(newUser.password, salt, (err, hash) => {
@@ -51,13 +66,23 @@ router.post("/register", (req, res) => {
 //@desc     Login user / Returning JWT Token
 //@access   Public
 router.post("/login", (req, res) => {
+  //4g. pull out the errors and is valid from validation/register
+  const { errors, isValid } = validateLoginInput(req.body); //destructuring
+
+  //4h. check validation
+  if (!isValid) {
+    //if isValid is true then the object should be empty of errors
+    return res.status(400).json(errors);
+  }
+
   const email = req.body.email;
   const password = req.body.password;
   //find user by email
   User.findOne({ email: req.body.email }).then(user => {
     //check for user
     if (!user) {
-      return res.status(404).json({ email: "User not found" });
+      errors.email = "User not found";
+      return res.status(404).json(errors);
     }
 
     //check password
@@ -79,7 +104,8 @@ router.post("/login", (req, res) => {
           }
         );
       } else {
-        return res.status(400).json({ password: "password incorrect" });
+        errors.password = "password incorrect";
+        return res.status(400).json(errors);
       }
     });
   });
