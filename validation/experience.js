@@ -3,27 +3,29 @@ const Validator = require("validator");
 const isEmpty = require("./is-empty");
 
 //you'll be able to use this function from outside
-module.exports = function validateLoginInput(data) {
+module.exports = function validateExperienceInput(data) {
   //4a. create an object of errors
   let errors = {};
 
   //4i. you have to make these fields empty first unless they are not empty
   //if a user doesn't enter anything these are not initialized as empty rather they are null or undefined so this makes sure they are empty if the user doesn't enter anything.
-  data.email = !isEmpty(data.email) ? data.email : "";
-  data.password = !isEmpty(data.password) ? data.password : "";
+  data.title = !isEmpty(data.title) ? data.title : "";
+  data.company = !isEmpty(data.company) ? data.company : "";
+  data.from = !isEmpty(data.from) ? data.from : "";
 
-  //------------email field checking
-  if (!Validator.isEmail(data.email)) {
-    errors.email = "Email is invalid";
+  //------------title field checking
+  if (Validator.isEmpty(data.title)) {
+    errors.title = "Job title field is required";
   }
 
-  if (Validator.isEmpty(data.email)) {
-    errors.email = "Email field is required";
+  //------------company field checking
+  if (Validator.isEmpty(data.company)) {
+    errors.company = "Company field is required";
   }
 
-  //------------password field checking
-  if (Validator.isEmpty(data.password)) {
-    errors.password = "Password field is required";
+  //------------from field checking
+  if (Validator.isEmpty(data.from)) {
+    errors.from = "From date field is required";
   }
 
   //4d. return the errors object
