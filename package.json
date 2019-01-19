@@ -4,8 +4,11 @@
   "description": "social network for developers",
   "main": "server.js",
   "scripts": {
+    "client-install": "npm install --prefix client",
     "start": "node server.js",
-    "server": "nodemon server.js"
+    "server": "nodemon server.js",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "repository": {
     "type": "git",
@@ -24,6 +27,7 @@
     "gravatar": "^1.8.0",
     "jsonwebtoken": "^8.4.0",
     "mongoose": "^5.4.2",
+    "npm": "^6.6.0",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "validator": "^10.10.0"
